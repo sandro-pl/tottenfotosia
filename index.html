@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformador de Rosto com IA (6 Estilos)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carregando a biblioteca face-api.js para detecção de rostos no navegador -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilo para o spinner de carregamento */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Estilos para o modal de imagem ampliada */
+        .modal-enter { transition: opacity 0.3s ease; }
+        .modal-leave { transition: opacity 0.3s ease; }
+        .modal-enter-from, .modal-leave-to { opacity: 0; }
+        .modal-enter-to, .modal-leave-from { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-6xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-600">Transformador de Rosto com IA</h1>
+            <p class="text-gray-400 mt-2">Capture uma foto da sua webcam e veja a mágica acontecer.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <!-- Coluna da Câmera e Controles -->
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-lg w-full">
+                <h2 class="text-2xl font-bold mb-4">1. Sua Câmera</h2>
+                <div id="webcam-container" class="relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+                    <video id="webcam" class="w-full h-full object-cover" autoplay playsinline></video>
+                    <div id="webcam-loader" class="absolute text-center">
+                        <div class="loader mx-auto"></div>
+                        <p class="mt-2 text-gray-400">Iniciando a câmera...</p>
+                    </div>
+                </div>
+                <button id="capture-btn" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                    Capturar e Transformar
+                </button>
+                 <!-- Canvas oculto para manipulação de imagem -->
+                <canvas id="capture-canvas" class="hidden"></canvas>
+            </div>
+
+            <!-- Coluna do Rosto Detectado e Resultados -->
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-lg w-full">
+                <h2 class="text-2xl font-bold mb-4">2. Rosto Detectado</h2>
+                 <div id="face-container" class="w-32 h-32 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-6">
+                    <p id="face-placeholder" class="text-gray-500 text-xs text-center">Aguardando captura...</p>
+                    <canvas id="face-canvas" class="hidden rounded-lg"></canvas>
+                </div>
+                
+                <h2 class="text-2xl font-bold mb-4">3. Resultados da IA</h2>
+                <div id="results" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Geradores de Imagem -->
+                    <div class="style-container" data-style="superhero">
+                        <h3 class="font-semibold mb-2">Super-Herói</h3>
+                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="loader-placeholder"><div class="loader"></div></div>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem de Super-Herói"/>
+                        </div>
+                    </div>
+                    <div class="style-container" data-style="dark">
+                        <h3 class="font-semibold mb-2">Sombrio</h3>
+                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="loader-placeholder"><div class="loader"></div></div>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Sombria"/>
+                        </div>
+                    </div>
+                    <div class="style-container" data-style="popart">
+                        <h3 class="font-semibold mb-2">Pop Art</h3>
+                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="loader-placeholder"><div class="loader"></div></div>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Pop Art"/>
+                        </div>
+                    </div>
+                    <div class="style-container" data-style="filmnoir">
+                        <h3 class="font-semibold mb-2">Film Noir</h3>
+                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="loader-placeholder"><div class="loader"></div></div>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Film Noir"/>
+                        </div>
+                    </div>
+                    <div class="style-container" data-style="steampunk">
+                        <h3 class="font-semibold mb-2">Steampunk</h3>
+                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="loader-placeholder"><div class="loader"></div></div>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Steampunk"/>
+                        </div>
+                    </div>
+                    <div class="style-container" data-style="cyberpunk">
+                        <h3 class="font-semibold mb-2">Cyberpunk</h3>
+                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                            <div class="loader-placeholder"><div class="loader"></div></div>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Cyberpunk"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Modal de Notificação -->
+        <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl max-w-sm text-center">
+                <h3 id="modal-title" class="text-2xl font-bold mb-4">Aviso</h3>
+                <p id="modal-message" class="text-gray-300 mb-6"></p>
+                <button id="modal-close-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg">OK</button>
+            </div>
+        </div>
+
+        <!-- Modal para Imagem Ampliada -->
+        <div id="enlarge-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 modal-enter">
+            <div class="bg-gray-800 p-4 rounded-2xl shadow-2xl max-w-3xl max-h-full text-center relative">
+                <button id="enlarge-close-btn" class="absolute -top-3 -right-3 bg-white text-gray-900 rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg">&times;</button>
+                <img id="enlarged-image" src="" class="max-w-full max-h-[80vh] rounded-lg mx-auto" alt="Imagem Ampliada">
+                <button id="print-btn" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">
+                    Imprimir
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+    // --- Referências aos Elementos do DOM ---
+    const webcamElement = document.getElementById('webcam');
+    const captureCanvas = document.getElementById('capture-canvas');
+    const faceCanvas = document.getElementById('face-canvas');
+    const captureBtn = document.getElementById('capture-btn');
+    const webcamLoader = document.getElementById('webcam-loader');
+    const facePlaceholder = document.getElementById('face-placeholder');
+    const resultContainers = document.querySelectorAll('.style-container');
+    
+    // Modal de notificação
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    // Modal de imagem ampliada
+    const enlargeModal = document.getElementById('enlarge-modal');
+    const enlargedImage = document.getElementById('enlarged-image');
+    const enlargeCloseBtn = document.getElementById('enlarge-close-btn');
+    const printBtn = document.getElementById('print-btn');
+
+    let modelsLoaded = false;
+    
+    // --- Funções dos Modais ---
+    function showModal(title, message) {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modal.classList.remove('hidden');
+    }
+    
+    modalCloseBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    function showEnlargedImage(imageSrc) {
+        enlargedImage.src = imageSrc;
+        enlargeModal.classList.remove('hidden');
+        enlargeModal.classList.add('modal-enter-to');
+        enlargeModal.classList.remove('modal-enter-from');
+    }
+
+    function hideEnlargedImage() {
+        enlargeModal.classList.add('modal-leave-to');
+        enlargeModal.classList.remove('modal-enter-to');
+        setTimeout(() => {
+            enlargeModal.classList.add('hidden');
+            enlargeModal.classList.remove('modal-leave-to');
+        }, 300); // Duração da transição
+    }
+    
+    function printImage() {
+        const imageSrc = enlargedImage.src;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head><title>Imprimir Imagem</title></head>
+                <body style="margin:0; padding:0; text-align:center;">
+                    <img src="${imageSrc}" style="max-width:100%;" onload="window.print(); window.close();" />
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    enlargeCloseBtn.addEventListener('click', hideEnlargedImage);
+    printBtn.addEventListener('click', printImage);
+
+
+    // --- Lógica Principal ---
+    async function setupWebcam() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+            webcamElement.srcObject = stream;
+            webcamElement.addEventListener('loadeddata', () => {
+                webcamLoader.classList.add('hidden');
+                console.log("Webcam iniciada.");
+            });
+        } catch (error) {
+            console.error("Erro ao acessar a webcam:", error);
+            webcamLoader.classList.add('hidden');
+            showModal('Erro de Câmera', 'Não foi possível acessar a sua webcam. Por favor, verifique as permissões no seu navegador.');
+        }
+    }
+
+    async function loadFaceApiModels() {
+        try {
+            const modelPath = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights';
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(modelPath),
+                faceapi.nets.faceLandmark68Net.loadFromUri(modelPath),
+                faceapi.nets.faceRecognitionNet.loadFromUri(modelPath),
+            ]);
+            modelsLoaded = true;
+            captureBtn.disabled = false;
+            console.log("Modelos de detecção de rosto carregados.");
+        } catch (error) {
+            console.error("Erro ao carregar modelos da face-api:", error);
+            showModal('Erro Crítico', 'Não foi possível carregar os modelos de IA para detecção de rosto. Tente recarregar a página.');
+        }
+    }
+
+    async function captureAndProcess() {
+        if (!modelsLoaded || webcamElement.readyState !== 4) {
+            showModal('Aguarde', 'A câmera ou os modelos de IA ainda não estão prontos.');
+            return;
+        }
+
+        captureBtn.disabled = true;
+        captureBtn.textContent = 'Processando...';
+        resetResults();
+
+        const context = captureCanvas.getContext('2d');
+        captureCanvas.width = webcamElement.videoWidth;
+        captureCanvas.height = webcamElement.videoHeight;
+        context.drawImage(webcamElement, 0, 0, captureCanvas.width, captureCanvas.height);
+
+        const detection = await faceapi.detectSingleFace(captureCanvas, new faceapi.TinyFaceDetectorOptions());
+
+        if (!detection) {
+            showModal('Ops!', 'Nenhum rosto foi detectado na foto. Tente novamente com boa iluminação e olhando para a câmera.');
+            captureBtn.disabled = false;
+            captureBtn.textContent = 'Capturar e Transformar';
+            return;
+        }
+
+        const { x, y, width, height } = detection.box;
+        const padding = width * 0.4; 
+        const cropX = Math.max(0, x - padding);
+        const cropY = Math.max(0, y - padding);
+        const cropWidth = width + padding * 2;
+        const cropHeight = height + padding * 2;
+        
+        const faceCtx = faceCanvas.getContext('2d');
+        faceCanvas.width = 256;
+        faceCanvas.height = 256;
+        faceCtx.drawImage(captureCanvas, cropX, cropY, cropWidth, cropHeight, 0, 0, 256, 256);
+        
+        facePlaceholder.classList.add('hidden');
+        faceCanvas.classList.remove('hidden');
+
+        const base64FaceData = faceCanvas.toDataURL('image/png').split(',')[1];
+        
+        console.log("Rosto detectado e recortado. Enviando para IA generativa...");
+        generateAllStyles(base64FaceData);
+    }
+    
+    function resetResults() {
+        resultContainers.forEach(container => {
+            const img = container.querySelector('.result-image');
+            img.classList.add('hidden');
+            img.src = '';
+            img.classList.remove('cursor-pointer', 'hover:opacity-80', 'transition-opacity');
+            img.onclick = null;
+
+            const loaderPlaceholder = container.querySelector('.loader-placeholder');
+            loaderPlaceholder.classList.remove('hidden');
+            const p = loaderPlaceholder.querySelector('p');
+            if (p) p.remove();
+            if (!loaderPlaceholder.querySelector('.loader')) {
+                const loaderDiv = document.createElement('div');
+                loaderDiv.className = 'loader';
+                loaderPlaceholder.appendChild(loaderDiv);
+            }
+        });
+        faceCanvas.classList.add('hidden');
+        facePlaceholder.classList.remove('hidden');
+    }
+
+    // *** MUDANÇA: Lógica de geração alterada para sequencial com intervalo ***
+    async function generateAllStyles(base64ImageData) {
+        const prompts = {
+            superhero: "Full body shot of a superhero in a dynamic pose, ultra-realistic. Use the face from the provided image. The background is a city in ruins. Cinematic, volumetric lighting.",
+            dark: "Full body shot of a mysterious character in a dark fantasy, gothic style. Use the face from the provided image. The style should be painterly, with deep shadows and a moody atmosphere, hyper-detailed.",
+            popart: "Full body shot of the person in a vibrant, colorful pop-art style, similar to Andy Warhol. Use the provided face. The background should be a pattern of repeating geometric shapes.",
+            filmnoir: "Full body shot of the person as a character from a classic black and white film noir movie. Use the provided face. The scene is a dark, rainy city street at night, with dramatic shadows from streetlights.",
+            steampunk: "Full body portrait of a person in an elaborate steampunk outfit, with gears, goggles, and brass accessories. Use the provided face. The background is an industrial Victorian city with airships in the sky. Highly detailed, retro-futuristic.",
+            cyberpunk: "Full body portrait of a cyberpunk character with neon-lit clothing and futuristic cybernetic enhancements. Use the provided face. The background is a rainy, neon-drenched city street at night, in the style of Blade Runner."
+        };
+
+        // Loop para processar cada imagem sequencialmente
+        for (const [style, promptText] of Object.entries(prompts)) {
+            // Verifica se o botão não foi desabilitado por algum erro anterior
+            if (captureBtn.disabled) {
+                 await generateImage(base64ImageData, promptText, style);
+                 // Pausa de 2 segundos entre as solicitações
+                 await new Promise(resolve => setTimeout(resolve, 2000));
+            } else {
+                // Se o processo foi interrompido (ex: erro de detecção), para o loop
+                break;
+            }
+        }
+        
+        captureBtn.disabled = false;
+        captureBtn.textContent = 'Capturar Nova Transformação';
+        console.log("Processo de geração de imagens finalizado.");
+    }
+    
+    async function generateImage(base64ImageData, prompt, style) {
+        const container = document.querySelector(`.style-container[data-style="${style}"]`);
+        const imgElement = container.querySelector('img');
+        const loaderElement = container.querySelector('.loader-placeholder');
+        
+        try {
+            const model = 'gemini-2.0-flash-preview-image-generation'; 
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inlineData: { mimeType: "image/png", data: base64ImageData } }
+                    ]
+                }],
+                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`API Error: ${response.status}. Details: ${errorBody}`);
+            }
+
+            const result = await response.json();
+            const generatedBase64 = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+            if (generatedBase64) {
+                const imageSrc = `data:image/png;base64,${generatedBase64}`;
+                imgElement.src = imageSrc;
+                loaderElement.classList.add('hidden');
+                imgElement.classList.remove('hidden');
+                imgElement.classList.add('cursor-pointer', 'hover:opacity-80', 'transition-opacity');
+                imgElement.onclick = () => showEnlargedImage(imageSrc);
+                console.log(`Imagem estilo "${style}" gerada com sucesso.`);
+            } else {
+                let errorMessage = "Resposta da API inválida.";
+                if(result?.candidates?.[0]?.finishReason === 'SAFETY') {
+                    errorMessage = "Bloqueado por segurança.";
+                }
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error(`Erro ao gerar imagem para o estilo "${style}":`, error);
+            loaderElement.querySelector('.loader')?.remove();
+            loaderElement.innerHTML = `<p class="text-red-400 text-xs text-center p-2">Falhou</p>`;
+        }
+    }
+
+    // --- Inicialização ---
+    window.addEventListener('load', () => {
+        captureBtn.disabled = true;
+        setupWebcam();
+        loadFaceApiModels();
+        captureBtn.addEventListener('click', captureAndProcess);
+    });
+</script>
+
+</body>
+</html>
