@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformador de Rosto com IA (6 Estilos)</title>
+    <title>Transformador de Rosto com IA (com Logotipo)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carregando a biblioteca face-api.js para detecção de rostos no navegador -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
@@ -40,18 +40,6 @@
             <p class="text-gray-400 mt-2">Capture uma foto da sua webcam e veja a mágica acontecer.</p>
         </header>
 
-        <!-- *** NOVO: Seção para Configuração da Chave de API *** -->
-        <div class="w-full max-w-2xl mx-auto bg-gray-800 p-4 rounded-2xl shadow-lg mb-8">
-            <h2 class="text-xl font-bold mb-2 text-center">Configuração Necessária</h2>
-            <label for="api-key-input" class="block text-sm font-medium text-gray-300">Sua Chave de API do Google AI Studio</label>
-            <div class="flex items-center gap-2 mt-1">
-                <input type="password" id="api-key-input" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="Cole sua chave de API aqui">
-                <button id="save-key-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-lg">Salvar</button>
-            </div>
-             <p class="text-xs text-gray-400 mt-2">Sua chave é salva apenas no seu navegador. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline hover:text-indigo-400">Obtenha sua chave aqui.</a></p>
-             <p id="key-status" class="text-xs text-green-400 mt-1"></p>
-        </div>
-
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             <!-- Coluna da Câmera e Controles -->
             <div class="bg-gray-800 p-6 rounded-2xl shadow-lg w-full">
@@ -83,42 +71,42 @@
                     <!-- Geradores de Imagem -->
                     <div class="style-container" data-style="superhero">
                         <h3 class="font-semibold mb-2">Super-Herói</h3>
-                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem de Super-Herói"/>
                         </div>
                     </div>
                     <div class="style-container" data-style="dark">
                         <h3 class="font-semibold mb-2">Sombrio</h3>
-                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem Sombria"/>
                         </div>
                     </div>
                     <div class="style-container" data-style="popart">
                         <h3 class="font-semibold mb-2">Pop Art</h3>
-                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem Pop Art"/>
                         </div>
                     </div>
                     <div class="style-container" data-style="filmnoir">
                         <h3 class="font-semibold mb-2">Film Noir</h3>
-                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem Film Noir"/>
                         </div>
                     </div>
                     <div class="style-container" data-style="steampunk">
                         <h3 class="font-semibold mb-2">Steampunk</h3>
-                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem Steampunk"/>
                         </div>
                     </div>
                     <div class="style-container" data-style="cyberpunk">
                         <h3 class="font-semibold mb-2">Cyberpunk</h3>
-                        <div class="aspect-square bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem Cyberpunk"/>
                         </div>
@@ -170,14 +158,12 @@
     const enlargedImage = document.getElementById('enlarged-image');
     const enlargeCloseBtn = document.getElementById('enlarge-close-btn');
     const printBtn = document.getElementById('print-btn');
-
-    // *** NOVO: Elementos da Chave de API ***
-    const apiKeyInput = document.getElementById('api-key-input');
-    const saveKeyBtn = document.getElementById('save-key-btn');
-    const keyStatus = document.getElementById('key-status');
     
+    // ⬇️⬇️⬇️ COLE SUA CHAVE DE API DO GOOGLE AI STUDIO AQUI ⬇️⬇️⬇️
+    const userApiKey = 'AIzaSyDQLLk6HptVugubvY6IE-U-KGd39ZmBjHk'; 
+    // ⬆️⬆️⬆️ COLE SUA CHAVE DE API DO GOOGLE AI STUDIO AQUI ⬆️⬆️⬆️
+
     let modelsLoaded = false;
-    let userApiKey = '';
 
     // --- Funções dos Modais ---
     function showModal(title, message) {
@@ -211,9 +197,53 @@
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
             <html>
-                <head><title>Imprimir Imagem</title></head>
-                <body style="margin:0; padding:0; text-align:center;">
-                    <img src="${imageSrc}" style="max-width:100%;" onload="window.print(); window.close();" />
+                <head>
+                    <title>Imprimir Imagem 10x15cm</title>
+                    <style>
+                        @media print {
+                            @page {
+                                size: 10cm 15cm;
+                                margin: 0;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .print-container {
+                                width: 10cm;
+                                height: 15cm;
+                                overflow: hidden;
+                            }
+                            .print-image {
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                            }
+                        }
+                        body {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: #555;
+                            margin: 0;
+                        }
+                        .print-container {
+                            width: 10cm;
+                            height: 15cm;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                        }
+                        .print-image {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <img src="${imageSrc}" class="print-image" onload="window.print(); window.close();" />
+                    </div>
                 </body>
             </html>
         `);
@@ -257,8 +287,8 @@
     }
 
     async function captureAndProcess() {
-        if (!userApiKey) {
-            showModal('Chave de API Necessária', 'Por favor, insira e salve sua chave de API do Google AI Studio para continuar.');
+        if (userApiKey === 'AIzaSyDQLLk6HptVugubvY6IE-U-KGd39ZmBjHk' || !userApiKey) {
+            showModal('Chave de API Necessária', 'Por favor, edite o arquivo HTML e insira sua chave de API do Google AI Studio na variável "userApiKey".');
             return;
         }
 
@@ -330,12 +360,12 @@
 
     async function generateAllStyles(base64ImageData) {
         const prompts = {
-            superhero: "Full body shot of a superhero in a dynamic pose, ultra-realistic. Use the face from the provided image. The background is a city in ruins. Cinematic, volumetric lighting.",
-            dark: "Full body shot of a mysterious character in a dark fantasy, gothic style. Use the face from the provided image. The style should be painterly, with deep shadows and a moody atmosphere, hyper-detailed.",
-            popart: "Full body shot of the person in a vibrant, colorful pop-art style, similar to Andy Warhol. Use the provided face. The background should be a pattern of repeating geometric shapes.",
-            filmnoir: "Full body shot of the person as a character from a classic black and white film noir movie. Use the provided face. The scene is a dark, rainy city street at night, with dramatic shadows from streetlights.",
-            steampunk: "Full body portrait of a person in an elaborate steampunk outfit, with gears, goggles, and brass accessories. Use the provided face. The background is an industrial Victorian city with airships in the sky. Highly detailed, retro-futuristic.",
-            cyberpunk: "Full body portrait of a cyberpunk character with neon-lit clothing and futuristic cybernetic enhancements. Use the provided face. The background is a rainy, neon-drenched city street at night, in the style of Blade Runner."
+            superhero: "Vertical full body shot of a superhero, 2:3 aspect ratio, ultra-realistic. Use the face from the provided image. The background is a city in ruins. Cinematic, volumetric lighting.",
+            dark: "Vertical full body shot of a mysterious character in a dark fantasy, 2:3 aspect ratio, gothic style. Use the face from the provided image. The style should be painterly, with deep shadows and a moody atmosphere, hyper-detailed.",
+            popart: "Vertical full body shot of the person in a vibrant, colorful pop-art style, 2:3 aspect ratio, similar to Andy Warhol. Use the provided face. The background should be a pattern of repeating geometric shapes.",
+            filmnoir: "Vertical full body shot of the person as a character from a classic film noir movie, 2:3 aspect ratio. Use the provided face. The scene is a dark, rainy city street at night, with dramatic shadows from streetlights.",
+            steampunk: "Vertical full body portrait of a person in an elaborate steampunk outfit, 2:3 aspect ratio. Use the provided face. The background is an industrial Victorian city with airships in the sky. Highly detailed, retro-futuristic.",
+            cyberpunk: "Vertical full body portrait of a cyberpunk character, 2:3 aspect ratio, with neon-lit clothing and futuristic cybernetic enhancements. Use the provided face. The background is a rainy, neon-drenched city street at night, in the style of Blade Runner."
         };
 
         for (const [style, promptText] of Object.entries(prompts)) {
@@ -352,6 +382,7 @@
         console.log("Processo de geração de imagens finalizado.");
     }
     
+    // *** MUDANÇA: Função atualizada para adicionar o logotipo ***
     async function generateImage(base64ImageData, prompt, style) {
         const container = document.querySelector(`.style-container[data-style="${style}"]`);
         const imgElement = container.querySelector('img');
@@ -359,7 +390,6 @@
         
         try {
             const model = 'gemini-2.0-flash-preview-image-generation'; 
-            // *** MUDANÇA: Usa a chave fornecida pelo usuário ***
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${userApiKey}`;
             
             const payload = {
@@ -388,11 +418,15 @@
 
             if (generatedBase64) {
                 const imageSrc = `data:image/png;base64,${generatedBase64}`;
-                imgElement.src = imageSrc;
+                
+                // --- LÓGICA PARA ADICIONAR O LOGOTIPO ---
+                const finalImageSrc = await addLogoToImage(imageSrc);
+
+                imgElement.src = finalImageSrc;
                 loaderElement.classList.add('hidden');
                 imgElement.classList.remove('hidden');
                 imgElement.classList.add('cursor-pointer', 'hover:opacity-80', 'transition-opacity');
-                imgElement.onclick = () => showEnlargedImage(imageSrc);
+                imgElement.onclick = () => showEnlargedImage(finalImageSrc);
                 console.log(`Imagem estilo "${style}" gerada com sucesso.`);
             } else {
                 let errorMessage = "Resposta da API inválida.";
@@ -408,37 +442,69 @@
         }
     }
 
-    // *** NOVO: Funções para gerenciar a chave de API ***
-    function saveApiKey() {
-        const key = apiKeyInput.value.trim();
-        if (key) {
-            localStorage.setItem('userGoogleAiApiKey', key);
-            userApiKey = key;
-            keyStatus.textContent = 'Chave de API salva com sucesso!';
-            checkReadyState();
-            setTimeout(() => keyStatus.textContent = '', 3000);
-        } else {
-            keyStatus.textContent = 'Por favor, insira uma chave válida.';
-        }
-    }
+    // *** NOVO: Função para desenhar o logotipo na imagem ***
+    async function addLogoToImage(baseImageSrc) {
+        const logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/2560px-Senac_logo.svg.png';
+        
+        const compositeCanvas = document.createElement('canvas');
+        const ctx = compositeCanvas.getContext('2d');
 
-    function loadApiKey() {
-        const savedKey = localStorage.getItem('userGoogleAiApiKey');
-        if (savedKey) {
-            userApiKey = savedKey;
-            apiKeyInput.value = savedKey;
-            keyStatus.textContent = 'Chave de API carregada do seu navegador.';
-            setTimeout(() => keyStatus.textContent = '', 3000);
+        const mainImage = new Image();
+        const logoImage = new Image();
+        logoImage.crossOrigin = "Anonymous"; // Essencial para carregar imagens de outros domínios
+
+        // Cria promessas para aguardar o carregamento das imagens
+        const mainImageLoaded = new Promise((resolve, reject) => {
+            mainImage.onload = resolve;
+            mainImage.onerror = reject;
+            mainImage.src = baseImageSrc;
+        });
+
+        const logoImageLoaded = new Promise((resolve) => {
+            logoImage.onload = resolve;
+            logoImage.onerror = () => {
+                console.error("Falha ao carregar o logotipo. A imagem será exibida sem ele.");
+                resolve(); // Resolve mesmo em caso de erro para não quebrar a aplicação
+            };
+            logoImage.src = logoUrl;
+        });
+
+        await Promise.all([mainImageLoaded, logoImageLoaded]);
+
+        // Define o tamanho do canvas com base na imagem principal
+        compositeCanvas.width = mainImage.width;
+        compositeCanvas.height = mainImage.height;
+
+        // Desenha a imagem principal
+        ctx.drawImage(mainImage, 0, 0);
+
+        // Desenha o logotipo se ele foi carregado com sucesso
+        if (logoImage.complete && logoImage.naturalHeight !== 0) {
+            const dpi = 96; // DPI padrão de tela
+            const logoWidthCm = 3;
+            const logoHeightCm = 2;
+            const logoWidthPx = (logoWidthCm / 2.54) * dpi;
+            const logoHeightPx = (logoHeightCm / 2.54) * dpi;
+            const marginPx = mainImage.width * 0.02; // Margem de 2% da largura da imagem
+
+            const logoX = compositeCanvas.width - logoWidthPx - marginPx;
+            const logoY = compositeCanvas.height - logoHeightPx - marginPx;
+
+            ctx.drawImage(logoImage, logoX, logoY, logoWidthPx, logoHeightPx);
         }
+
+        return compositeCanvas.toDataURL('image/png');
     }
 
     function checkReadyState() {
-        if (modelsLoaded && userApiKey) {
-            captureBtn.disabled = false;
-            captureBtn.textContent = 'Capturar e Transformar';
-        } else if (!userApiKey) {
-            captureBtn.disabled = true;
-            captureBtn.textContent = 'Configure sua Chave de API';
+        if (modelsLoaded) {
+            if (userApiKey === 'SUA_CHAVE_DE_API_AQUI' || !userApiKey) {
+                captureBtn.textContent = 'Configure sua Chave de API no código';
+                captureBtn.disabled = true;
+            } else {
+                captureBtn.disabled = false;
+                captureBtn.textContent = 'Capturar e Transformar';
+            }
         }
     }
 
@@ -447,11 +513,9 @@
         captureBtn.disabled = true;
         captureBtn.textContent = 'Carregando modelos...';
         
-        loadApiKey();
         setupWebcam();
         loadFaceApiModels();
         
-        saveKeyBtn.addEventListener('click', saveApiKey);
         captureBtn.addEventListener('click', captureAndProcess);
     });
 </script>
