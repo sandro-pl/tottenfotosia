@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformador de Rosto com IA (com Logotipo)</title>
+    <title>Transformador de Rosto com IA (Chave Fixa)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Carregando a biblioteca face-api.js para detecção de rostos no navegador -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
@@ -76,11 +76,11 @@
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem de Super-Herói"/>
                         </div>
                     </div>
-                    <div class="style-container" data-style="dark">
-                        <h3 class="font-semibold mb-2">Sombrio</h3>
+                    <div class="style-container" data-style="magazine">
+                        <h3 class="font-semibold mb-2">Capa de Revista</h3>
                         <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
-                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Sombria"/>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem de Capa de Revista"/>
                         </div>
                     </div>
                     <div class="style-container" data-style="popart">
@@ -90,25 +90,26 @@
                             <img class="result-image hidden w-full h-full object-cover" alt="Imagem Pop Art"/>
                         </div>
                     </div>
-                    <div class="style-container" data-style="filmnoir">
-                        <h3 class="font-semibold mb-2">Film Noir</h3>
+                    <div class="style-container" data-style="otaku">
+                        <h3 class="font-semibold mb-2">Otaku</h3>
                         <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
-                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Film Noir"/>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Otaku"/>
                         </div>
                     </div>
-                    <div class="style-container" data-style="steampunk">
-                        <h3 class="font-semibold mb-2">Steampunk</h3>
+                    <!-- *** MUDANÇA: Estilo "Viagem para o Futuro" alterado para "Profissão do Futuro" *** -->
+                    <div class="style-container" data-style="future_profession">
+                        <h3 class="font-semibold mb-2">Profissão do Futuro</h3>
                         <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
-                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Steampunk"/>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem de Profissão do Futuro"/>
                         </div>
                     </div>
-                    <div class="style-container" data-style="cyberpunk">
-                        <h3 class="font-semibold mb-2">Cyberpunk</h3>
+                    <div class="style-container" data-style="gothic">
+                        <h3 class="font-semibold mb-2">Retrato Gótico</h3>
                         <div class="aspect-[2/3] bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
                             <div class="loader-placeholder"><div class="loader"></div></div>
-                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem Cyberpunk"/>
+                            <img class="result-image hidden w-full h-full object-cover" alt="Imagem de Retrato Gótico"/>
                         </div>
                     </div>
                 </div>
@@ -159,9 +160,7 @@
     const enlargeCloseBtn = document.getElementById('enlarge-close-btn');
     const printBtn = document.getElementById('print-btn');
     
-    // ⬇️⬇️⬇️ COLE SUA CHAVE DE API DO GOOGLE AI STUDIO AQUI ⬇️⬇️⬇️
     const userApiKey = 'AIzaSyDQLLk6HptVugubvY6IE-U-KGd39ZmBjHk'; 
-    // ⬆️⬆️⬆️ COLE SUA CHAVE DE API DO GOOGLE AI STUDIO AQUI ⬆️⬆️⬆️
 
     let modelsLoaded = false;
 
@@ -205,21 +204,22 @@
                                 size: 10cm 15cm;
                                 margin: 0;
                             }
-                            body {
+                            body, html {
                                 margin: 0;
                                 padding: 0;
-                            }
-                            .print-container {
                                 width: 10cm;
                                 height: 15cm;
-                                overflow: hidden;
                             }
-                            .print-image {
+                            .print-image-container {
                                 width: 100%;
                                 height: 100%;
-                                object-fit: cover;
+                                background-image: url('${imageSrc}');
+                                background-size: cover;
+                                background-position: center;
+                                background-repeat: no-repeat;
                             }
                         }
+                        /* Estilos para a pré-visualização na tela */
                         body {
                             display: flex;
                             justify-content: center;
@@ -228,26 +228,28 @@
                             background-color: #555;
                             margin: 0;
                         }
-                        .print-container {
+                        .print-image-container {
                             width: 10cm;
                             height: 15cm;
                             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-                        }
-                        .print-image {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
+                            background-image: url('${imageSrc}');
+                            background-size: cover;
+                            background-position: center;
+                            background-repeat: no-repeat;
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="print-container">
-                        <img src="${imageSrc}" class="print-image" onload="window.print(); window.close();" />
-                    </div>
+                    <div class="print-image-container"></div>
                 </body>
             </html>
         `);
         printWindow.document.close();
+        
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 250);
     }
 
     enlargeCloseBtn.addEventListener('click', hideEnlargedImage);
@@ -287,7 +289,7 @@
     }
 
     async function captureAndProcess() {
-        if (userApiKey === 'AIzaSyDQLLk6HptVugubvY6IE-U-KGd39ZmBjHk' || !userApiKey) {
+        if (userApiKey === 'SUA_CHAVE_DE_API_AQUI' || !userApiKey) {
             showModal('Chave de API Necessária', 'Por favor, edite o arquivo HTML e insira sua chave de API do Google AI Studio na variável "userApiKey".');
             return;
         }
@@ -359,13 +361,14 @@
     }
 
     async function generateAllStyles(base64ImageData) {
+        // *** MUDANÇA: Prompt "future" reescrito para "future_profession" com mais detalhes ***
         const prompts = {
             superhero: "Vertical full body shot of a superhero, 2:3 aspect ratio, ultra-realistic. Use the face from the provided image. The background is a city in ruins. Cinematic, volumetric lighting.",
-            dark: "Vertical full body shot of a mysterious character in a dark fantasy, 2:3 aspect ratio, gothic style. Use the face from the provided image. The style should be painterly, with deep shadows and a moody atmosphere, hyper-detailed.",
+            magazine: "A fashion magazine cover titled 'Casa Aberta'. The main photo MUST feature the person from the provided image, using their face and creating a body that matches the facial features. The person is the cover star, striking a confident pose. The image is a vertical shot, 2:3 aspect ratio. Include headlines like 'Não é Futuro: É Agora!', 'A Educação que Transforma Vidas' and 'Explore as Profissões do Futuro'. High-fashion photography style.",
             popart: "Vertical full body shot of the person in a vibrant, colorful pop-art style, 2:3 aspect ratio, similar to Andy Warhol. Use the provided face. The background should be a pattern of repeating geometric shapes.",
-            filmnoir: "Vertical full body shot of the person as a character from a classic film noir movie, 2:3 aspect ratio. Use the provided face. The scene is a dark, rainy city street at night, with dramatic shadows from streetlights.",
-            steampunk: "Vertical full body portrait of a person in an elaborate steampunk outfit, 2:3 aspect ratio. Use the provided face. The background is an industrial Victorian city with airships in the sky. Highly detailed, retro-futuristic.",
-            cyberpunk: "Vertical full body portrait of a cyberpunk character, 2:3 aspect ratio, with neon-lit clothing and futuristic cybernetic enhancements. Use the provided face. The background is a rainy, neon-drenched city street at night, in the style of Blade Runner."
+            otaku: "An ultra-realistic, vertical full body photo of a person as a modern Otaku character, 2:3 aspect ratio. The character MUST use the face from the provided image. They are in a bustling, neon-lit street in Akihabara, Tokyo at night. The style should be like a high-quality, cinematic cosplay photograph.",
+            future_profession: "An ultra-realistic, vertical full body photo of a professional of the future, 2:3 aspect ratio. The professional MUST have the face from the provided image. The person is an AI specialist in a high-tech laboratory, wearing a modern uniform and interacting with holographic data displays. The style is clean, sharp, and photorealistic.",
+            gothic: "A vertical full body portrait of a mysterious character in a gothic style, 2:3 aspect ratio. The character MUST use the face from the provided image. The setting is an old, moonlit library with dramatic shadows. The style is artistic and painterly, reminiscent of dark romanticism."
         };
 
         for (const [style, promptText] of Object.entries(prompts)) {
@@ -382,7 +385,6 @@
         console.log("Processo de geração de imagens finalizado.");
     }
     
-    // *** MUDANÇA: Função atualizada para adicionar o logotipo ***
     async function generateImage(base64ImageData, prompt, style) {
         const container = document.querySelector(`.style-container[data-style="${style}"]`);
         const imgElement = container.querySelector('img');
@@ -419,7 +421,6 @@
             if (generatedBase64) {
                 const imageSrc = `data:image/png;base64,${generatedBase64}`;
                 
-                // --- LÓGICA PARA ADICIONAR O LOGOTIPO ---
                 const finalImageSrc = await addLogoToImage(imageSrc);
 
                 imgElement.src = finalImageSrc;
@@ -442,18 +443,16 @@
         }
     }
 
-    // *** NOVO: Função para desenhar o logotipo na imagem ***
     async function addLogoToImage(baseImageSrc) {
         const logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/2560px-Senac_logo.svg.png';
         
-        const compositeCanvas = document.createElement('canvas');
-        const ctx = compositeCanvas.getContext('2d');
+        const finalCanvas = document.createElement('canvas');
+        const ctx = finalCanvas.getContext('2d');
 
         const mainImage = new Image();
         const logoImage = new Image();
-        logoImage.crossOrigin = "Anonymous"; // Essencial para carregar imagens de outros domínios
+        logoImage.crossOrigin = "Anonymous";
 
-        // Cria promessas para aguardar o carregamento das imagens
         const mainImageLoaded = new Promise((resolve, reject) => {
             mainImage.onload = resolve;
             mainImage.onerror = reject;
@@ -464,36 +463,47 @@
             logoImage.onload = resolve;
             logoImage.onerror = () => {
                 console.error("Falha ao carregar o logotipo. A imagem será exibida sem ele.");
-                resolve(); // Resolve mesmo em caso de erro para não quebrar a aplicação
+                resolve(); 
             };
             logoImage.src = logoUrl;
         });
 
         await Promise.all([mainImageLoaded, logoImageLoaded]);
 
-        // Define o tamanho do canvas com base na imagem principal
-        compositeCanvas.width = mainImage.width;
-        compositeCanvas.height = mainImage.height;
+        const finalWidth = 1024;
+        const finalHeight = 1536;
+        finalCanvas.width = finalWidth;
+        finalCanvas.height = finalHeight;
 
-        // Desenha a imagem principal
-        ctx.drawImage(mainImage, 0, 0);
+        const imgAspectRatio = mainImage.width / mainImage.height;
+        const canvasAspectRatio = finalWidth / finalHeight;
+        let sx, sy, sWidth, sHeight;
 
-        // Desenha o logotipo se ele foi carregado com sucesso
+        if (imgAspectRatio > canvasAspectRatio) { 
+            sHeight = mainImage.height;
+            sWidth = sHeight * canvasAspectRatio;
+            sx = (mainImage.width - sWidth) / 2;
+            sy = 0;
+        } else { 
+            sWidth = mainImage.width;
+            sHeight = sWidth / canvasAspectRatio;
+            sx = 0;
+            sy = (mainImage.height - sHeight) / 2;
+        }
+        ctx.drawImage(mainImage, sx, sy, sWidth, sHeight, 0, 0, finalWidth, finalHeight);
+
         if (logoImage.complete && logoImage.naturalHeight !== 0) {
-            const dpi = 96; // DPI padrão de tela
-            const logoWidthCm = 3;
-            const logoHeightCm = 2;
-            const logoWidthPx = (logoWidthCm / 2.54) * dpi;
-            const logoHeightPx = (logoHeightCm / 2.54) * dpi;
-            const marginPx = mainImage.width * 0.02; // Margem de 2% da largura da imagem
+            const logoWidthPx = finalWidth * 0.25;
+            const logoHeightPx = logoImage.naturalHeight * (logoWidthPx / logoImage.naturalWidth);
+            const marginPx = finalWidth * 0.03;
 
-            const logoX = compositeCanvas.width - logoWidthPx - marginPx;
-            const logoY = compositeCanvas.height - logoHeightPx - marginPx;
+            const logoX = finalWidth - logoWidthPx - marginPx;
+            const logoY = finalHeight - logoHeightPx - marginPx;
 
             ctx.drawImage(logoImage, logoX, logoY, logoWidthPx, logoHeightPx);
         }
 
-        return compositeCanvas.toDataURL('image/png');
+        return finalCanvas.toDataURL('image/png');
     }
 
     function checkReadyState() {
